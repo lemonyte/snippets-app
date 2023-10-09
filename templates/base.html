@@ -122,17 +122,18 @@
         align-items: center;
         text-transform: uppercase;
         text-decoration: none;
+        white-space: nowrap;
         cursor: pointer;
+        display: flex;
       }
 
-      button:hover,
-      .button:hover {
+      button:not(.disabled):hover,
+      .button:not(.disabled):hover {
         filter: brightness(110%);
       }
 
-      button:disabled,
-      .button:disabled {
-        filter: brightness(50%);
+      .disabled {
+        opacity: 50%;
         cursor: not-allowed;
       }
 

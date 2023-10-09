@@ -10,7 +10,7 @@
     Upload image
     <input name="image" type="file" accept=".jpg, .jpeg, .png" onchange="uploadImage(event);" />
   </label>
-  <a id="create-button" class="button" onclick="create();" disabled="">
+  <a id="create-button" class="button disabled" onclick="create();">
     <span class="icon"><i class="fa fa-check"></i></span>Create
   </a>
   <select id="highlight-lang" onchange="updateInput();"></select>
@@ -67,7 +67,7 @@
       return;
     }
     try {
-      createButton.disabled = true;
+      createButton.classList.add("disabled");
       const response = await fetch("/api/snippet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -105,7 +105,7 @@
 
       window.location.pathname = `/snippet/${snippet.id}`;
     } finally {
-      createButton.disabled = false;
+      createButton.classList.remove("disabled");
     }
   }
 
@@ -135,10 +135,10 @@
 
     if (hiddenInput.value !== "" && imageInput.files.length > 0) {
       // hiddenInput.style.color = "transparent";
-      createButton.disabled = false;
+      createButton.classList.remove("disabled");
     } else {
       // hiddenInput.style.color = "white";
-      createButton.disabled = true;
+      createButton.classList.add("disabled");
     }
 
     // Extra newline as a workaround for trailing newline not showing in code element.
@@ -194,15 +194,7 @@
   }
 
   function load() {
-    /* const snippetJson = localStorage.getItem("snippet-data");
-    if (snippetJson) {
-      const snippet = JSON.parse(snippetJson);
-      hiddenInput.value = snippet.content;
-      nameInput.value = snippet.name;
-      localStorage.removeItem("snippet-data");
-    }
-    hiddenInput.selectionEnd = 0;
-    updateInput(); */
+    // hiddenInput.selectionEnd = 0;
 
     const languages = ["", ...hljs.listLanguages()];
     for (const language of languages) {
@@ -229,11 +221,7 @@
   const imageInput = document.querySelector('#upload-image input[type="file"]');
   // const fileInput = document.querySelector("#upload-file input[type='file']");
 
-  // hiddenInput.addEventListener("input", updateInput);
-  // nameInput.addEventListener("input", updateInput);
   // hiddenInput.addEventListener("scroll", syncScroll);
-  // hiddenInput.addEventListener("keydown", handleTab);
-  // highlightLangSelect.addEventListener("change", updateInput);
 
   window.addEventListener("keydown", handleShortcuts);
   window.addEventListener("load", load);

@@ -75,7 +75,10 @@ async def api_image_get(id: UUID) -> Response:
     ):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     image = images.get(filename).read()  # pyright: ignore[reportOptionalMemberAccess]
-    return Response(image, media_type="image/png")
+    headers = {
+        "Cache-Control": "public, max-age=604800, immutable",
+    }
+    return Response(image, headers=headers, media_type="image/png")
 
 
 @app.post("/api/image/{id}")

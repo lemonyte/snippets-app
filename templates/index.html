@@ -1,0 +1,48 @@
+{% extends "base.html" %}{% block content %}
+<div class="row">
+  <a href="/create" class="button">
+    <span class="icon"><i class="fa fa-plus"></i></span>Create
+  </a>
+</div>
+<div class="image-card-container">
+  {% for snippet in snippets %}
+  <div class="image-card">
+    <div class="name">{{ snippet.name or snippet.id }}</div>
+    <a href="/snippet/{{ snippet.id }}">
+      <img src="/api/image/{{ snippet.id }}" />
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}{% block styles %}{{ super() }}
+<style>
+  .image-card-container {
+    margin: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .image-card {
+    background-color: var(--background-2);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .image-card .name {
+    flex: unset;
+  }
+
+  .image-card a {
+    width: 100%;
+    height: 100%;
+  }
+
+  .image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
+{% endblock %}

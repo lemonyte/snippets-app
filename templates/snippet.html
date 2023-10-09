@@ -1,0 +1,132 @@
+{% extends "base.html" %}{% block head %}{{ super() }}
+<meta name="robots" content="noindex, nofollow" />
+{% endblock %}{% block content %}
+<div class="row">
+  <a class="button" onclick="copy();">
+    <span class="icon"><i class="fa fa-clipboard"></i></span>Copy
+  </a>
+  <a class="button" onclick="raw();">
+    <span class="icon"><i class="fa fa-file-text"></i></span>Raw
+  </a>
+  <a class="button" onclick="downloadText();">
+    <span class="icon"><i class="fa fa-download"></i></span>Download
+  </a>
+  <a class="button" onclick="share();">
+    <span class="icon"><i class="fa fa-share-square-o"></i></span>Share
+  </a>
+  <select id="highlight-lang" onchange="highlight();"></select>
+</div>
+<div class="row">
+  <div class="name">{{ snippet.name or snippet.id }}</div>
+</div>
+<div class="column-container">
+  <div class="column">
+    <pre class="snippet"><code id="snippet-content">{{ snippet.content }}</code></pre>
+  </div>
+  <div class="column">
+    <img id="image" src="/api/image/{{ snippet.id }}" />
+  </div>
+</div>
+{% endblock %}{% block scripts %}{{ super() }}
+<script>
+  async function share() {
+    const data = {
+      url: window.location.href,
+      title: "Snippets",
+      text: snippet.name,
+    };
+    if (window.navigator.canShare && window.navigator.canShare(data)) {
+      await window.navigator.share(data);
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      alert("Link copied to clipboard.");
+    }
+  }
+
+  async function copy() {
+    await navigator.clipboard.writeText(snippet.content);
+  }
+
+  function downloadText() {
+    const link = document.createElement("a");
+    link.href = rawUrl;
+    link.download = snippet.name || "snippet.txt";
+    link.click();
+  }
+
+  function raw() {
+    window.location = rawUrl;
+  }
+
+  function handleShortcuts(event) {
+    if (event.ctrlKey) {
+      switch (event.key) {
+        case "s":
+          event.preventDefault();
+          downloadText();
+          break;
+      }
+    }
+  }
+
+  function highlight() {
+    codeElement.removeAttribute("data-highlighted");
+    codeElement.classList.remove(...codeElement.classList);
+    if (hljs.listLanguages().includes(highlightLangSelect.value)) {
+      codeElement.classList.add("hljs");
+      codeElement.classList.add(`language-${highlightLangSelect.value}`);
+    }
+    hljs.highlightElement(codeElement);
+  }
+
+  async function load() {
+    const languages = ["", ...hljs.listLanguages()];
+    for (const language of languages) {
+      const option = document.createElement("option");
+      option.value = language;
+      option.innerText = language ? hljs.getLanguage(language).name : "Auto";
+      highlightLangSelect.appendChild(option);
+    }
+
+    document.title = `${snippet.name || snippet.id} - ${document.title}`;
+    if (!extension) {
+      if (snippet.name.includes(".")) {
+        extension = snippet.name.substring(snippet.name.lastIndexOf(".") + 1);
+      } else if (snippet.highlighting_language) {
+        extension = snippet.highlighting_language;
+      }
+    }
+    if (extension) {
+      codeElement.classList.add("hljs", `language-${extension}`);
+      // This monstrosity finds the option with the same language name as the extension and sets it as the selected option.
+      // Why? Because HLJS does not give us the language identifer used in hljs.listLanguages() in the language object.
+      // i.e. the identifer for C# is "csharp", but the returned language object only contains "C#" and "cs".
+      highlightLangSelect.value = Array.from(highlightLangSelect.options).find(
+        (option) => option.innerText === hljs.getLanguage(extension).name,
+      ).value;
+    }
+    hljs.highlightAll();
+  }
+
+  const id = window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1).split(".")[0];
+  let extension = "";
+  if (window.location.pathname.includes(".")) {
+    extension = window.location.pathname.substring(window.location.pathname.lastIndexOf(".") + 1);
+  }
+  const rawUrl = `${window.location.origin}/raw/${id}`;
+  const codeElement = document.getElementById("snippet-content");
+  const highlightLangSelect = document.getElementById("highlight-lang");
+  const snippet = {
+    content: `{{ snippet.content }}`,
+    name: `{{ snippet.name }}`,
+    description: `{{ snippet.description }}`,
+    prompt: `{{ snippet.prompt }}`,
+    highlighting_language: `{{ snippet.highlighting_language }}`,
+    id: `{{ snippet.id }}`,
+    creation_time: parseInt(`{{ snippet.creation_time }}`),
+  };
+
+  window.addEventListener("keydown", handleShortcuts);
+  window.addEventListener("load", load);
+</script>
+{% endblock %}

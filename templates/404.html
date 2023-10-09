@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% block content %}
+<div>
+  <h1>404 - Not Found</h1>
+  <!-- <pre class="snippet"><code></code></pre> -->
+  <!-- <img id="image" /> -->
+</div>
+{% endblock %}{% block styles %}{{ super() }}
+<style>
+  div {
+    text-align: center;
+  }
+
+  h1 {
+    font-family: monospace;
+  }
+
+  pre {
+    display: flex;
+    justify-content: center;
+    margin: 30px;
+  }
+
+  img {
+    max-height: 600px;
+    max-width: 600px;
+    height: auto;
+    width: auto;
+  }
+</style>
+{% endblock %}{% block scripts %}{{ super() }}
+<!-- <script>
+  const code = document.getElementsByTagName("code")[0];
+  code.textContent = `{{ code | safe }}`;
+  code.classList.add("hljs", "language-python");
+  hljs.highlightElement(code);
+  fetch("https://api.waifu.pics/sfw/waifu")
+    .then((response) => { return response.json(); })
+    .then((data) => { document.getElementById("image").src = data.url; });
+</script> -->
+{% endblock %}

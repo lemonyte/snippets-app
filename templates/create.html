@@ -1,0 +1,256 @@
+{% extends "base.html" %}{% block content %}
+<div class="row">
+  <label id="upload-file" class="button">
+    <span class="icon"><i class="fa fa-upload"></i></span>
+    Upload file
+    <input name="file" type="file" onchange="uploadFile(event);" />
+  </label>
+  <label id="upload-image" class="button">
+    <span class="icon"><i class="fa fa-image"></i></span>
+    Upload image
+    <input name="image" type="file" accept=".jpg, .jpeg, .png" onchange="uploadImage(event);" />
+  </label>
+  <a id="create-button" class="button" onclick="create();" disabled="">
+    <span class="icon"><i class="fa fa-check"></i></span>Create
+  </a>
+  <select id="highlight-lang" onchange="updateInput();"></select>
+</div>
+<div class="row">
+  <input id="name" type="text" placeholder="Name" spellcheck="false" wrap="off" oninput="updateInput();" />
+</div>
+<div class="column-container">
+  <div class="column">
+    <textarea
+      id="snippet-content"
+      placeholder="Paste or type..."
+      spellcheck="false"
+      wrap="off"
+      autofocus=""
+      oninput="updateInput();"
+      onkeydown="handleTab(event);"
+    ></textarea>
+  </div>
+  <div class="column">
+    <div class="image-placeholder">Upload a screenshot</div>
+    <img id="image-preview" />
+  </div>
+</div>
+{% endblock %}{% block styles %}{{ super() }}
+<style>
+  textarea,
+  input[type="text"] {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: left;
+    white-space: pre;
+    background-color: var(--background-2);
+    caret-color: var(--text);
+    resize: none;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-family: monospace;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+</style>
+{% endblock %}{% block scripts %}{{ super() }}
+<script>
+  async function create() {
+    const content = hiddenInput.value.trimEnd();
+    if (!content || imageInput.files.length === 0) {
+      return;
+    }
+    try {
+      createButton.disabled = true;
+      const response = await fetch("/api/snippet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: content,
+          name: nameInput.value.trim(),
+          highlighting_language: highlightLangSelect.value,
+        }),
+      });
+
+      if (!response.ok) {
+        switch (response.status) {
+          case 409:
+            alert("ID already exists. Please choose another ID.");
+            break;
+
+          default:
+            alert("An unexpected error occurred. Please try again or report a bug with logs.");
+            break;
+        }
+        return;
+      }
+
+      const snippet = await response.json();
+
+      // TODO: temporary while admin panel is not implemented
+      await fetch(`/api/verify/${snippet.id}`);
+
+      const formData = new FormData();
+      formData.append("image", imageInput.files[0]);
+      await fetch(`/api/image/${snippet.id}`, {
+        method: "POST",
+        body: formData,
+      });
+
+      window.location.pathname = `/snippet/${snippet.id}`;
+    } finally {
+      createButton.disabled = false;
+    }
+  }
+
+  function fileToContent(file) {
+    if (
+      !file ||
+      (!file.type.startsWith("text/") && !file.type.endsWith("json") && !file.type.endsWith("javascript"))
+    ) {
+      return;
+    }
+    nameInput.value = file.name;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      hiddenInput.value = event.target.result;
+      updateInput();
+    };
+    reader.readAsText(file);
+  }
+
+  /* function syncScroll() {
+    highlightedInput.firstChild.scrollLeft = hiddenInput.scrollLeft;
+  } */
+
+  function updateInput() {
+    // hiddenInput.rows = hiddenInput.value.split("\n").length;
+    // highlightedInput.style.height = document.getElementById("content").style.height = hiddenInput.scrollHeight.toString() + "px";
+
+    if (hiddenInput.value !== "" && imageInput.files.length > 0) {
+      // hiddenInput.style.color = "transparent";
+      createButton.disabled = false;
+    } else {
+      // hiddenInput.style.color = "white";
+      createButton.disabled = true;
+    }
+
+    // Extra newline as a workaround for trailing newline not showing in code element.
+    /* highlightedInput.firstChild.textContent = hiddenInput.value + "\n";
+    highlightedInput.firstChild.classList.remove(...highlightedInput.firstChild.classList);
+    if (hljs.listLanguages().includes(highlightLangSelect.value)) {
+      highlightedInput.firstChild.classList.add("hljs");
+      highlightedInput.firstChild.classList.add(`language-${highlightLangSelect.value}`);
+    }
+    hljs.highlightElement(highlightedInput.firstChild);
+    syncScroll(); */
+  }
+
+  function uploadFile(event) {
+    if (event.target.files.length > 0) {
+      fileToContent(event.target.files[0]);
+    }
+  }
+
+  function uploadImage(event) {
+    if (event.target.files.length > 0) {
+      const src = URL.createObjectURL(event.target.files[0]);
+      document.getElementById("image-preview").src = src;
+      document.querySelector(".image-placeholder").style.display = "none";
+    }
+    updateInput();
+  }
+
+  function handleTab(event) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      const tab = "  ";
+      const code = event.target.value;
+      const beforeTab = code.slice(0, event.target.selectionStart);
+      const afterTab = code.slice(event.target.selectionEnd, event.target.value.length);
+      const cursorPos = event.target.selectionStart + tab.length;
+      event.target.value = beforeTab + tab + afterTab;
+      event.target.selectionStart = cursorPos;
+      event.target.selectionEnd = cursorPos;
+      updateInput();
+    }
+  }
+
+  function handleShortcuts(event) {
+    if (event.ctrlKey) {
+      switch (event.key) {
+        case "s":
+          event.preventDefault();
+          create();
+          break;
+      }
+    }
+  }
+
+  function load() {
+    /* const snippetJson = localStorage.getItem("snippet-data");
+    if (snippetJson) {
+      const snippet = JSON.parse(snippetJson);
+      hiddenInput.value = snippet.content;
+      nameInput.value = snippet.name;
+      localStorage.removeItem("snippet-data");
+    }
+    hiddenInput.selectionEnd = 0;
+    updateInput(); */
+
+    const languages = ["", ...hljs.listLanguages()];
+    for (const language of languages) {
+      const option = document.createElement("option");
+      option.value = language;
+      option.innerText = language ? hljs.getLanguage(language).name : "Auto";
+      highlightLangSelect.appendChild(option);
+    }
+
+    if (imageInput.files.length > 0) {
+      const src = URL.createObjectURL(imageInput.files[0]);
+      document.getElementById("image-preview").src = src;
+      document.querySelector(".image-placeholder").style.display = "none";
+    }
+    updateInput();
+  }
+
+  // const hiddenInput = document.getElementById("hidden-input");
+  const hiddenInput = document.getElementById("snippet-content");
+  const nameInput = document.getElementById("name");
+  // const highlightedInput = document.getElementById("highlighted-input");
+  const createButton = document.getElementById("create-button");
+  const highlightLangSelect = document.getElementById("highlight-lang");
+  const imageInput = document.querySelector('#upload-image input[type="file"]');
+  // const fileInput = document.querySelector("#upload-file input[type='file']");
+
+  // hiddenInput.addEventListener("input", updateInput);
+  // nameInput.addEventListener("input", updateInput);
+  // hiddenInput.addEventListener("scroll", syncScroll);
+  // hiddenInput.addEventListener("keydown", handleTab);
+  // highlightLangSelect.addEventListener("change", updateInput);
+
+  window.addEventListener("keydown", handleShortcuts);
+  window.addEventListener("load", load);
+
+  document.body.ondragover = (event) => {
+    event.preventDefault();
+  };
+
+  hiddenInput.ondrop = (event) => {
+    event.preventDefault();
+    let file;
+    if (event.dataTransfer.items && event.dataTransfer.items[0].kind === "file") {
+      file = event.dataTransfer.items[0].getAsFile();
+    } else {
+      file = event.dataTransfer.files[0];
+    }
+    fileToContent(file);
+  };
+</script>
+{% endblock %}

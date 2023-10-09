@@ -7,8 +7,8 @@
 <div class="image-card-container">
   {% for snippet in snippets %}
   <div class="image-card">
-    <div class="name">{{ snippet.name or snippet.id }}</div>
     <a href="/snippet/{{ snippet.id }}">
+      <div class="name">{{ snippet.name or snippet.id }}</div>
       <img src="/api/image/{{ snippet.id }}" />
     </a>
   </div>
@@ -37,6 +37,10 @@
   .image-card a {
     width: 100%;
     height: 100%;
+    color: var(--tx);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
   }
 
   .image-card img {

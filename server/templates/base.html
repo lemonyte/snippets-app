@@ -47,33 +47,37 @@
       }
 
       nav {
-        padding: 10px;
         display: flex;
         flex-direction: row;
+        flex: 2;
       }
 
-      nav a {
-        padding: 10px;
+      nav * {
+        margin: 10px;
         color: var(--tx);
+        font-weight: bold;
+        font-size: 2em;
         text-decoration: none;
         user-select: none;
         -webkit-user-select: none;
       }
 
-      nav a.right {
-        align-self: end;
+      nav .separator {
+        margin: 10px 0 10px 0;
+        color: var(--tx-3);
+        font-weight: normal;
       }
 
       .container {
         flex: 1;
         display: flex;
         flex-direction: column;
-        padding: 10px;
+        margin: 10px;
         overflow: auto;
       }
 
       footer {
-        padding: 10px;
+        margin: 10px;
         color: var(--tx-3);
         text-align: center;
         user-select: none;
@@ -112,6 +116,12 @@
         align-items: center;
       }
 
+      .controls {
+        display: flex;
+        flex-direction: row;
+        margin: 10px;
+      }
+
       button,
       .button {
         padding: 10px;
@@ -134,6 +144,10 @@
       button:not(.disabled):hover,
       .button:not(.disabled):hover {
         filter: brightness(110%);
+      }
+
+      .secondary {
+        background-color: var(--ui-2);
       }
 
       .disabled {
@@ -202,26 +216,30 @@
     {% endblock %}
   </head>
   <body>
-    <nav>
-      {% block navbar %}
-      <a href="/">
-        <span class="icon"><i class="fa fa-home"></i></span>
-        Home
-      </a>
-      <a href="/pending">
-        <span class="icon"><i class="fa fa-hourglass"></i></span>
-        Pending
-      </a>
-      <a href="/docs" class="right">
-        <span class="icon"><i class="fa fa-code"></i></span>
-        API
-      </a>
-      <a href="https://github.com/lemonyte/snippets-app" class="right">
-        <span class="icon"><i class="fa fa-github"></i></span>
-        GitHub
-      </a>
-      {% endblock %}
-    </nav>
+    <div class="row">
+      <nav>
+        {% block navbar %}
+        <a href="/" style="color: var(--or)">Snippets</a>
+        {% endblock %}
+      </nav>
+      <div class="controls">
+        <a href="/create" class="button">
+          <span class="icon"><i class="fa fa-plus"></i></span>Create
+        </a>
+        <a href="/pending" class="button secondary">
+          <span class="icon"><i class="fa fa-hourglass"></i></span>
+          Pending
+        </a>
+        <a href="/docs" class="button secondary">
+          <span class="icon"><i class="fa fa-code"></i></span>
+          API
+        </a>
+        <a href="https://github.com/lemonyte/snippets-app" class="button secondary">
+          <span class="icon"><i class="fa fa-github"></i></span>
+          GitHub
+        </a>
+      </div>
+    </div>
     <div class="container">{% block content %}{% endblock %}</div>
     <footer>
       {% block footer %}

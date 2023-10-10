@@ -1,4 +1,7 @@
-{% extends "base.html" %}{% block content %}
+{% extends "base.html" %}{% block navbar %}{{ super() }}
+<span class="separator">/</span>
+<span>404</span>
+{% endblock %}{% block content %}
 <div>
   <h1>404 - Not Found</h1>
   <div>

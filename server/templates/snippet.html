@@ -1,5 +1,11 @@
 {% extends "base.html" %}{% block head %}{{ super() }}
 <meta name="robots" content="noindex, nofollow" />
+{% endblock %}{% block navbar %}{{ super() }}{% if not verified %}
+<span class="separator">/</span>
+<a href="/pending">Pending</a>
+{% endif %}
+<span class="separator">/</span>
+<span>{{ snippet.name or snippet.id }}</span>
 {% endblock %}{% block content %}
 <div class="row">
   {% if not verified %}

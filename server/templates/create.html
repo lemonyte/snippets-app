@@ -1,4 +1,7 @@
-{% extends "base.html" %}{% block content %}
+{% extends "base.html" %}{% block navbar %}{{ super() }}
+<span class="separator">/</span>
+<span>Create</span>
+{% endblock %}{% block content %}
 <div class="row">
   <label id="upload-file" class="button">
     <span class="icon"><i class="fa fa-upload"></i></span>

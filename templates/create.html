@@ -85,16 +85,16 @@
             break;
 
           default:
-            alert("An unexpected error occurred. Please try again or report a bug with logs.");
+            alert(
+              `${response.status}: ${response.statusText}.` +
+                "\n\nAn unexpected error occurred. Please try again or report a bug with logs.",
+            );
             break;
         }
         return;
       }
 
       const snippet = await response.json();
-
-      // TODO: temporary while admin panel is not implemented
-      await fetch(`/api/verify/${snippet.id}`);
 
       const formData = new FormData();
       formData.append("image", imageInput.files[0]);
@@ -103,7 +103,17 @@
         body: formData,
       });
 
+      try {
+        // Try to verify the snippet automatically.
+        await fetch(`/api/verify/${snippet.id}`);
+      } catch {
+        // User is not the owner of the app, so verification can only be done manually.
+      }
+
       window.location.pathname = `/snippet/${snippet.id}`;
+    } catch (error) {
+      alert(`An unexpected error occurred. Please try again or report a bug with logs.\n\n${error}`);
+      console.error(error);
     } finally {
       createButton.classList.remove("disabled");
     }

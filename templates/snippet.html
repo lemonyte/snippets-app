@@ -2,6 +2,11 @@
 <meta name="robots" content="noindex, nofollow" />
 {% endblock %}{% block content %}
 <div class="row">
+  {% if not verified %}
+  <a class="button" onclick="verify();">
+    <span class="icon"><i class="fa fa-check"></i></span>Verify
+  </a>
+  {% endif %}
   <a class="button" onclick="copy();">
     <span class="icon"><i class="fa fa-clipboard"></i></span>Copy
   </a>
@@ -57,6 +62,22 @@
 
   function raw() {
     window.location = rawUrl;
+  }
+
+  async function verify() {
+    try {
+      const response = await fetch(`/api/verify/${snippet.id}`);
+      if (!response.ok) {
+        alert(
+          `${response.status}: ${response.statusText}.` +
+            "\n\nAn unexpected error occurred. Please try again or report a bug with logs.",
+        );
+      }
+      window.location.pathname = "/pending";
+    } catch (error) {
+      alert(`An unexpected error occurred. Please try again or report a bug with logs.\n\n${error}`);
+      console.error(error);
+    }
   }
 
   function handleShortcuts(event) {

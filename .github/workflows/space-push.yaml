@@ -5,18 +5,22 @@ on:
     branches:
       - main
 
+concurrency: push-${{ github.sha }}
+
 jobs:
   lint:
+    name: Lint
     uses: ./.github/workflows/lint.yaml
   push:
+    name: Push to Space
     runs-on: ubuntu-latest
     environment: Testing
     needs: lint
     steps:
-      - name: Check out repository.
+      - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Push to Space.
+      - name: Push to Space
         uses: neobrains/space-deployment-github-action@v0.5
         with:
           access_token: ${{ secrets.DETA_ACCESS_TOKEN }}

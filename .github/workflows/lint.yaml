@@ -1,7 +1,7 @@
 name: Lint
 
 on:
-  push:
+  # push:
   pull_request:
   workflow_call:
 
@@ -9,11 +9,12 @@ concurrency: lint-${{ github.sha }}
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: "3.9"
     steps:
-      - name: Check out repository.
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}.
@@ -21,12 +22,12 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install dependencies.
+      - name: Install dependencies
         run: |
           python -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
-      - name: Run pre-commit hooks.
+      - name: Run pre-commit hooks
         uses: pre-commit/action@v3.0.0

@@ -1,6 +1,7 @@
 [tool.ruff]
 select = ["ALL"]
 ignore = ["A", "D", "T20", "TD002", "TD003"]
+src = ["server"]
 line-length = 119
 target-version = "py39"
 fix = true

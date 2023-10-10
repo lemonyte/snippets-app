@@ -14,7 +14,7 @@ micros:
       - /snippet/*
       - /raw/*
       - /static/*
-      - /api/snippets
+      - /api/snippet
       - /api/snippet/*
       - /api/image/*
     presets:

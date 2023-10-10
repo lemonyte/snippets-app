@@ -177,9 +177,11 @@
         object-fit: contain;
       }
 
-      .image-placeholder {
+      .placeholder {
         color: var(--tx-3);
         font-size: 2em;
+        justify-self: center;
+        align-self: center;
       }
 
       .name {
@@ -243,7 +245,7 @@
     <div class="container">{% block content %}{% endblock %}</div>
     <footer>
       {% block footer %}
-      <p>
+      <!-- <p>
         Made with
         <a href="https://www.python.org">Python</a>
         and a keyboard
@@ -251,7 +253,7 @@
         Powered by
         <a href="https://fastapi.tiangolo.com">FastAPI</a>, <a href="https://deta.space">Deta</a>, and long sleepless
         nights
-      </p>
+      </p> -->
       {% endblock %}
     </footer>
     {% block scripts %}

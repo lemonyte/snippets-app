@@ -19,7 +19,15 @@
   <select id="highlight-lang" onchange="updateInput();"></select>
 </div>
 <div class="row">
-  <input id="name" type="text" placeholder="Name" spellcheck="false" wrap="off" oninput="updateInput();" />
+  <input
+    id="name"
+    class="name"
+    type="text"
+    placeholder="Name"
+    spellcheck="false"
+    wrap="off"
+    oninput="updateInput();"
+  />
 </div>
 <div class="column-container">
   <div class="column">
@@ -34,7 +42,7 @@
     ></textarea>
   </div>
   <div class="column">
-    <div class="image-placeholder">Upload a screenshot</div>
+    <div class="placeholder">Upload a screenshot</div>
     <img id="image-preview" class="full" />
   </div>
 </div>
@@ -175,7 +183,7 @@
     if (event.target.files.length > 0) {
       const src = URL.createObjectURL(event.target.files[0]);
       document.getElementById("image-preview").src = src;
-      document.querySelector(".image-placeholder").style.display = "none";
+      document.querySelector(".placeholder").style.display = "none";
     }
     updateInput();
   }
@@ -220,7 +228,7 @@
     if (imageInput.files.length > 0) {
       const src = URL.createObjectURL(imageInput.files[0]);
       document.getElementById("image-preview").src = src;
-      document.querySelector(".image-placeholder").style.display = "none";
+      document.querySelector(".placeholder").style.display = "none";
     }
     updateInput();
   }

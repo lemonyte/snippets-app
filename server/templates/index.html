@@ -3,18 +3,24 @@
 <span>Pending</span>
 {% endif %}{% endblock %}{% block content %}
 <div class="image-card-container">
-  {% for snippet in snippets %}
+  {% if snippets %}{% for snippet in snippets %}
   <div class="image-card">
     {% if not verified %}
-      <a href="/pending/snippet/{{ snippet.id }}">
-    {% else %}
+    <a href="/pending/snippet/{{ snippet.id }}">
+      {% else %}
       <a href="/snippet/{{ snippet.id }}">
-    {% endif %}
+        {% endif %}
         <div class="name">{{ snippet.name or snippet.id }}</div>
         <img src="/api/image/{{ snippet.id }}" />
+        {% if not verified %}
       </a>
+      {% else %}
+    </a>
+    {% endif %}
   </div>
-  {% endfor %}
+  {% endfor %}{% else %}
+  <div class="placeholder">Nothing here yet...</div>
+  {% endif %}
 </div>
 {% endblock %}{% block styles %}{{ super() }}
 <style>
@@ -23,6 +29,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
+    flex: 1;
   }
 
   .image-card {

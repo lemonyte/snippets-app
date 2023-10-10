@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from uuid import UUID  # noqa: TCH003
+from uuid import UUID
 
 from deta import Drive
 from fastapi import FastAPI, HTTPException, Request, UploadFile, status

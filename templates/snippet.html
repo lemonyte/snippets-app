@@ -27,6 +27,7 @@
     <img class="full" src="/api/image/{{ snippet.id }}" />
   </div>
 </div>
+<data id="snippet-data">{{ snippet.model_dump(mode="json") | tojson }}</data>
 {% endblock %}{% block scripts %}{{ super() }}
 <script>
   async function share() {
@@ -116,15 +117,7 @@
   const rawUrl = `${window.location.origin}/raw/${id}`;
   const codeElement = document.getElementById("snippet-content");
   const highlightLangSelect = document.getElementById("highlight-lang");
-  const snippet = {
-    content: `{{ snippet.content }}`,
-    name: `{{ snippet.name }}`,
-    description: `{{ snippet.description }}`,
-    prompt: `{{ snippet.prompt }}`,
-    highlighting_language: `{{ snippet.highlighting_language }}`,
-    id: `{{ snippet.id }}`,
-    creation_time: parseInt(`{{ snippet.creation_time }}`),
-  };
+  const snippet = JSON.parse(document.getElementById("snippet-data").innerText);
 
   window.addEventListener("keydown", handleShortcuts);
   window.addEventListener("load", load);

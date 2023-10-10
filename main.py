@@ -61,11 +61,6 @@ async def api_snippet_get(id: UUID) -> Snippet:
     return snippet
 
 
-@app.get("/api/snippets", response_model=list[Snippet])
-async def api_snippets() -> list[Snippet]:
-    return db.fetch()
-
-
 @app.get("/api/image/{id}")
 async def api_image_get(id: UUID) -> Response:
     filename = f"{id}.png"

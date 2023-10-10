@@ -1,0 +1,13 @@
+[tool.ruff]
+select = ["ALL"]
+ignore = ["A", "D", "T20", "TD002", "TD003"]
+line-length = 119
+target-version = "py39"
+fix = true
+
+[tool.black]
+line-length = 119
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

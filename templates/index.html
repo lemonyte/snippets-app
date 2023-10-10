@@ -7,10 +7,14 @@
 <div class="image-card-container">
   {% for snippet in snippets %}
   <div class="image-card">
-    <a href="/snippet/{{ snippet.id }}">
-      <div class="name">{{ snippet.name or snippet.id }}</div>
-      <img src="/api/image/{{ snippet.id }}" />
-    </a>
+    {% if not verified %}
+      <a href="/pending/snippet/{{ snippet.id }}">
+    {% else %}
+      <a href="/snippet/{{ snippet.id }}">
+    {% endif %}
+        <div class="name">{{ snippet.name or snippet.id }}</div>
+        <img src="/api/image/{{ snippet.id }}" />
+      </a>
   </div>
   {% endfor %}
 </div>

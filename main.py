@@ -21,7 +21,13 @@ images = Drive("images")
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request) -> Response:
     snippets = db.fetch()
-    return templates.TemplateResponse("index.html", {"request": request, "snippets": snippets})
+    return templates.TemplateResponse("index.html", {"request": request, "snippets": snippets, "verified": True})
+
+
+@app.get("/pending", response_class=HTMLResponse)
+async def pending(request: Request) -> Response:
+    snippets = pending_db.fetch()
+    return templates.TemplateResponse("index.html", {"request": request, "snippets": snippets, "verified": False})
 
 
 @app.get("/create", response_class=HTMLResponse)
@@ -32,7 +38,16 @@ async def create(request: Request) -> Response:
 @app.get("/snippet/{id}", response_class=HTMLResponse)
 async def view_snippet(id: UUID, request: Request) -> Response:
     snippet = await api_snippet_get(id)
-    return templates.TemplateResponse("snippet.html", {"request": request, "snippet": snippet})
+    return templates.TemplateResponse("snippet.html", {"request": request, "snippet": snippet, "verified": True})
+
+
+@app.get("/pending/snippet/{id}", response_class=HTMLResponse)
+async def view_pending_snippet(id: UUID, request: Request) -> Response:
+    try:
+        snippet = pending_db.get(id)
+    except SnippetNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND) from exc
+    return templates.TemplateResponse("snippet.html", {"request": request, "snippet": snippet, "verified": False})
 
 
 @app.get("/raw/{id}", response_class=PlainTextResponse)

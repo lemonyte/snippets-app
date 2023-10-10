@@ -1,6 +1,6 @@
 # Spacefile Docs: https://go.deta.dev/docs/spacefile/v0
 v: 0
-icon: ./static/icon.png
+icon: ./server/static/icon.png
 micros:
   - name: server
     src: ./server/
